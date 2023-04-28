@@ -7,7 +7,7 @@ interface Student {
   last_name: string;
   email: string;
   identity_number: string;
-  organization_id: number;
+  organization_id?: string[];
   gender: string;
   date_of_bird: string;
   phone: string;
@@ -25,6 +25,16 @@ export const Students = {
   },
   create: (student: Student): Promise<Student[]> => {
     return client.create(student, "students").then((student) => {
+      return student;
+    });
+  },
+  delete: (id: string): Promise<Student> => {
+    return client.delete(id, "students").then((student) => {
+      return student;
+    });
+  },
+  update: (student: Student, id: string): Promise<Student> => {
+    return client.update(id, student, "students").then((student) => {
       return student;
     });
   },

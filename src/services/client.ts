@@ -16,8 +16,8 @@ export class Client<T> {
       .all()
       .then((items): T[] => {
         return items.map((item) => ({
-          id: item.id,
           ...item.fields,
+          uuid: item.id,
         })) as T[];
       });
   }
@@ -26,33 +26,33 @@ export class Client<T> {
       item as any,
       function (err: any, record: any) {
         if (err) {
-          console.error(err);
           return;
         }
         return record;
       }
     );
   }
-  async delete(id: string, table: string): Promise<any> {
-    return await base(table).destroy(id, function (err, deletedRecord) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      return deletedRecord;
+  delete(id: string, table: string): Promise<T> {
+    return new Promise((resolve, reject) => {
+      base(table).destroy(id, function (err, record) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        console.log({ record });
+        resolve(record as T);
+      });
     });
   }
-  async update(id: string, item: T, table: string): Promise<any> {
-    return await base(table).create(
-      id,
-      item as any,
-      function (err: any, record: any) {
+  async update(id: string, item: T, table: string): Promise<T> {
+    return new Promise((resolve, reject) => {
+      base(table).create(id, item as any, function (err, record) {
         if (err) {
-          console.error(err);
+          reject(err);
           return;
         }
-        return record;
-      }
-    );
+        resolve(record as any);
+      });
+    });
   }
 }
